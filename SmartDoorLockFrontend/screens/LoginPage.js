@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 
 const LoginPage = ({ navigation }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    // Replace with real authentication logic
-    if (email === 'test@test.com' && password === 'password') {
-      navigation.navigate('Home');
+    // ✅ Updated authentication logic
+    if (username === 'Admin' && password === '123') {
+      navigation.navigate('Dashboard');
     } else {
-      Alert.alert('Invalid credentials', 'Please check your email or password.');
+      Alert.alert('Invalid credentials', 'Please check your username or password.');
     }
   };
 
@@ -20,8 +20,8 @@ const LoginPage = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Username"
-        value={email}
-        onChangeText={setEmail}
+        value={username}
+        onChangeText={setUsername}
       />
       <TextInput
         style={styles.input}

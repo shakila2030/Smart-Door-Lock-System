@@ -5,9 +5,29 @@ const RegistrationFormPage = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
 
-//   const handleRegister = () => {
-//     Alert.alert('Registration Successful', `Username: ${username}\nEmail: ${email}`);
-//   };
+  const handleRegister = async () => {
+    try {
+      const response = await fetch('http://192.168.192.231:8070/user/createuser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Registration Successful', data.message);
+        navigation.goBack();
+      } else {
+        Alert.alert('Registration Failed', data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Something went wrong. Please try again later.');
+    }
+  };
 
   const handleCancel = () => {
     navigation.goBack();
@@ -39,7 +59,7 @@ const RegistrationFormPage = ({ navigation }) => {
       </TouchableOpacity>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>

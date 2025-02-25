@@ -1,8 +1,20 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; 
 
 const UserCard = ({ user, onVerify, onBlock }) => {
+  const navigation = useNavigation(); 
+  
+    const handleLogout = () => {
+      console.log('Logging out...');
+      navigation.navigate('Home');
+    };
+  
   return (
+    <View style={styles.container}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutButtonText}>Log Out</Text>
+          </TouchableOpacity>
     <View style={styles.card}>
       <Text style={styles.userName}>{user.name}</Text>
       <View style={styles.buttonContainer}>
@@ -14,6 +26,7 @@ const UserCard = ({ user, onVerify, onBlock }) => {
         </TouchableOpacity>
       </View>
     </View>
+     </View>
   );
 };
 
@@ -40,9 +53,19 @@ const VerifyUserPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: '#f9f9f9',
+    padding: 20,
+  },
+  logoutButton: {
+    backgroundColor: '#000',
+    padding: 10,
+    borderRadius: 5,
+    alignSelf: 'flex-end',
+    marginBottom: 20,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
   card: {
     backgroundColor: '#fff',

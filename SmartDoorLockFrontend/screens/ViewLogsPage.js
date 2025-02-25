@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; 
 
 const LogCard = ({ log }) => {
   return (
@@ -11,10 +12,11 @@ const LogCard = ({ log }) => {
 
 const ViewLogsPage = () => {
   const dummyLog = { id: 1, message: 'User1 has unlocked the door at 1.00 p.m' };
+  const navigation = useNavigation(); 
 
   const handleLogout = () => {
     console.log('Logging out...');
-    // Backend API call to handle logout goes here
+    navigation.navigate('Home');
   };
 
   return (

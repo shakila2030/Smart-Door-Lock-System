@@ -6,14 +6,14 @@ const HomePage = ({ navigation }) => {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("AdminScreen")}
+        onPress={() => navigation.navigate("Login")}
       >
         <Text style={styles.buttonText}>Admin</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("UserScreen")}
+        onPress={() => navigation.navigate("User")}
       >
         <Text style={styles.buttonText}>User</Text>
       </TouchableOpacity>

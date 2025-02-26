@@ -1,18 +1,59 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; 
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const LogCard = ({ log }) => {
   return (
     <View style={styles.card}>
-      <Text style={styles.logText}>{log.message}</Text>
+      <Text style={styles.logText}>Username: {log.username}</Text>
+      <Text style={styles.logText}>Logged At: {new Date(log.verifiedAt).toLocaleString()}</Text>
     </View>
   );
 };
 
 const ViewLogsPage = () => {
-  const dummyLog = { id: 1, message: 'User1 has unlocked the door at 1.00 p.m' };
-  const navigation = useNavigation(); 
+  const [logs, setLogs] = useState([]);
+  const [message, setMessage] = useState('');
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const response = await fetch('http://192.168.192.231:8070/logs');  // Fetch logs for all users
+  
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Fetched data:', data); // Log the response data for debugging
+
+          if (Array.isArray(data)) {
+            // Filter logs based on isVerified and include username and email
+            const filteredLogs = data
+              .map(log => ({
+                ...log,
+                username: log.username,  // Include username
+                verifiedAt: log.verifiedAt,
+              }));
+
+            if (filteredLogs.length > 0) {
+              setLogs(filteredLogs);
+            } else {
+              setMessage('No verified logs found.');
+            }
+          } else {
+            setMessage('Unexpected response structure.');
+          }
+        } else {
+          const errorText = await response.text();
+          setMessage(`Server error: ${errorText}`);
+        }
+      } catch (error) {
+        console.error(error);
+        setMessage('Error occurred while fetching logs.');
+      }
+    };
+
+    fetchLogs();
+  }, []);
 
   const handleLogout = () => {
     console.log('Logging out...');
@@ -24,7 +65,17 @@ const ViewLogsPage = () => {
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Log Out</Text>
       </TouchableOpacity>
-      <LogCard log={dummyLog} />
+
+      {message ? (
+        <Text style={styles.message}>{message}</Text>
+      ) : (
+        <FlatList
+  data={logs}
+  renderItem={({ item }) => <LogCard log={item} />}
+  keyExtractor={(item) => item._id}  // Use the unique MongoDB _id field
+/>
+
+      )}
     </View>
   );
 };
@@ -61,6 +112,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
+  },
+  message: {
+    fontSize: 16,
+    color: 'red',
+    marginTop: 20,
+    textAlign: 'center',
   },
 });
 

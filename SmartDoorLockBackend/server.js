@@ -27,6 +27,8 @@ connection.once("open", () => {
 
 const UserRouter = require("./routes/user.js");
 app.use("/user", UserRouter);
+const LogRouter = require("./routes/VerificationLog.js");
+app.use("/logs", LogRouter);
 
 app.listen(PORT,() =>{
     console.log('Server is running on port '+PORT);

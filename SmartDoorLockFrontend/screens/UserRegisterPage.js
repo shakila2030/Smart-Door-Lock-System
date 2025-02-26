@@ -44,7 +44,13 @@ const UserRegistrationPage = ({ navigation }) => {
         <Text style={styles.buttonText}>Verify</Text>
       </TouchableOpacity>
       {message ? <Text style={styles.message}>{message}</Text> : null}
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Registration')}>
+          <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity>
+      </View>
     </View>
+    
   );
 };
 

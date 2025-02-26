@@ -18,8 +18,8 @@ const userSchema = new Schema({
     match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address'],
   },
   isVerified: {
-    type: Boolean,
-    default: false,
+    type: Number,
+    default: 0,
   },
 }, { timestamps: true });
 

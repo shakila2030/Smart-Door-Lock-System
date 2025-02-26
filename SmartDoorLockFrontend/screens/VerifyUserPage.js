@@ -1,52 +1,106 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; 
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const UserCard = ({ user, onVerify, onBlock }) => {
-  const navigation = useNavigation(); 
-  
-    const handleLogout = () => {
-      console.log('Logging out...');
-      navigation.navigate('Home');
-    };
-  
+  const usernameEmail = `${user.username}:${user.email}`;
+
   return (
     <View style={styles.container}>
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutButtonText}>Log Out</Text>
+      <View style={styles.card}>
+        <Text style={styles.userName}>{usernameEmail}</Text>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.verifyButton} onPress={() => onVerify(user._id)}>
+            <Text style={styles.buttonText}>Verify</Text>
           </TouchableOpacity>
-    <View style={styles.card}>
-      <Text style={styles.userName}>{user.name}</Text>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.verifyButton} onPress={() => onVerify(user.id)}>
-          <Text style={styles.buttonText}>Verify</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.blockButton} onPress={() => onBlock(user.id)}>
-          <Text style={styles.buttonText}>Block</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.blockButton} onPress={() => onBlock(user._id)}>
+            <Text style={styles.buttonText}>Block</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
-     </View>
   );
 };
 
 const VerifyUserPage = () => {
-  const dummyUser = { id: 1, name: 'User1' };
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleVerify = (userId) => {
-    console.log(`Verifying user with ID: ${userId}`);
-    // Backend API call to verify user goes here
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('http://192.168.192.231:8070/user');
+      const data = await response.json();
+
+      if (response.ok) {
+        const unverifiedUsers = data.filter(user => user.isVerified === 0);
+        setUsers(unverifiedUsers);
+      } else {
+        console.error('Error fetching users:', data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      Alert.alert('Error', 'Something went wrong. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleBlock = (userId) => {
-    console.log(`Blocking user with ID: ${userId}`);
-    // Backend API call to block user goes here
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleVerify = async (userId) => {
+    try {
+      const response = await fetch(`http://192.168.192.231:8070/user/verify/${userId}`, {
+        method: 'PUT',
+      });
+      if (response.ok) {
+        setUsers(users.filter(user => user._id !== userId));
+        console.log('User verified:', userId);
+      } else {
+        console.error('Error verifying user');
+      }
+    } catch (error) {
+      console.error('Error verifying user:', error);
+    }
   };
+
+  const handleBlock = async (userId) => {
+    try {
+      const response = await fetch(`http://192.168.192.231:8070/user/block/${userId}`, {
+        method: 'PUT',
+      });
+      if (response.ok) {
+        setUsers(users.filter(user => user._id !== userId));
+        console.log('User blocked:', userId);
+      } else {
+        console.error('Error blocking user');
+      }
+    } catch (error) {
+      console.error('Error blocking user:', error);
+    }
+  };
+
+  const navigation = useNavigation();
+  const handleLogout = () => {
+    console.log('Logging out...');
+    navigation.navigate('Home');
+  };
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
-    <View style={styles.container}>
-      <UserCard user={dummyUser} onVerify={handleVerify} onBlock={handleBlock} />
-    </View>
+    <ScrollView style={styles.container}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Log Out</Text>
+      </TouchableOpacity>
+
+      {users.map((user) => (
+        <UserCard key={user._id} user={user} onVerify={handleVerify} onBlock={handleBlock} />
+      ))}
+    </ScrollView>
   );
 };
 

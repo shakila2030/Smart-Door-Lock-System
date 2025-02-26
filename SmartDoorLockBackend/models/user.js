@@ -17,6 +17,10 @@ const userSchema = new Schema({
     lowercase: true,
     match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address'],
   },
+  fingerprintId: {
+    type: Number,
+    required: true,
+  },
   isVerified: {
     type: Number,
     default: 0,

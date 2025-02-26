@@ -5,7 +5,8 @@ const User = require('../models/user');
 
 // Create user API
 router.post('/createuser', async (req, res) => {
-  const { username, email } = req.body;
+  const { username, email, fingerprintId } = req.body;
+
 
   // Basic validation
   if (!username || !email) {
@@ -20,7 +21,7 @@ router.post('/createuser', async (req, res) => {
     }
 
     // Create new user
-    const newUser = new User({ username, email });
+    const newUser = new User({ username, email, fingerprintId});
     await newUser.save();
 
     res.status(201).json({ message: 'User created successfully', user: newUser });

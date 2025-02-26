@@ -4,6 +4,13 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 const RegistrationFormPage = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [fingerprintId, setFingerprintId] = useState(null);
+
+  const handleFingerprint = async () => {
+    const simulatedFingerprintId = Math.floor(Math.random() * 1000);
+    setFingerprintId(simulatedFingerprintId);
+    Alert.alert('Fingerprint Captured', `Fingerprint ID: ${simulatedFingerprintId}`);
+  };
 
   const handleRegister = async () => {
     try {
@@ -12,7 +19,7 @@ const RegistrationFormPage = ({ navigation }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email }),
+        body: JSON.stringify({ username, email, fingerprintId }),
       });
 
       const data = await response.json();
@@ -40,7 +47,6 @@ const RegistrationFormPage = ({ navigation }) => {
       <Text style={styles.label}>Username</Text>
       <TextInput
         style={styles.input}
-        placeholder=""
         value={username}
         onChangeText={setUsername}
       />
@@ -48,13 +54,12 @@ const RegistrationFormPage = ({ navigation }) => {
       <Text style={styles.label}>Email</Text>
       <TextInput
         style={styles.input}
-        placeholder=""
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
       />
 
-      <TouchableOpacity style={styles.fingerprintButton} onPress={() => Alert.alert('Add Fingerprint on the Sensor')}>
+      <TouchableOpacity style={styles.fingerprintButton} onPress={handleFingerprint}>
         <Text style={styles.buttonText}>Add Fingerprint</Text>
       </TouchableOpacity>
 
@@ -81,7 +86,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
-    textAlign: 'left',
   },
   label: {
     fontSize: 16,
@@ -116,9 +120,6 @@ const styles = StyleSheet.create({
     width: '45%',
     alignItems: 'center',
     borderRadius: 5,
-  },
-  cancelButton: {
-    borderColor: '#000',
   },
   buttonText: {
     fontSize: 16,
